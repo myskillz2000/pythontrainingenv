@@ -1,0 +1,36 @@
+version: "3.8"
+
+volumes:
+  db_vol:
+
+services:
+  jupyter:
+    image: jupyter/scipy-notebook
+    ports:
+      - "8888:8888"
+    links:
+      - db
+      - pgadmin
+    volumes:
+      - .:/home/jovyan
+
+  db: # DB Engine Container
+    image: postgres:12
+    volumes:
+      - db_vol:/var/lib/postgresql/data # Mount Volume to Postgres Data directory
+    environment:
+      POSTGRES_USER: "mstiller"
+      POSTGRES_PASSWORD: "ms030982"
+      POSTGRES_DB: "smg"
+    command: postgres -c log_destination=stderr -c log_statement=all
+    restart: always
+
+  pgadmin: # PGAdmin Container - PostgreSQL GUI Admin
+    image: dpage/pgadmin4
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "matthewstiller484@yahoo.com"
+      PGADMIN_DEFAULT_PASSWORD: "ms030982"
+
+
